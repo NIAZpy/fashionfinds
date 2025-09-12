@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Fashion Finds 2025 - Find the Best Dresses, Bags & Jewelry{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <h1 class="hero-title">Find the Best Dresses, Bags & Jewelry for 2025</h1>
+        <p class="hero-subtitle">Curated fashion finds with honest reviews and unbeatable deals</p>
+        <a href="{{ url_for('category', category='dress') }}" class="btn btn-primary btn-lg">
+            <i class="fas fa-shopping-bag me-2"></i>Shop Now
+        </a>
+    </div>
+</section>
+
+<!-- Featured Categories -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Featured Categories</h2>
+            <p class="lead text-muted">Discover our handpicked selection of trending fashion items</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for product in featured_products %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100">
+                    <img src="{{ product.image }}" class="card-img-top" alt="{{ product.name }}">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="h4 text-primary mb-0">{{ product.price }}</span>
+                            <div class="rating">
+                                {% for i in range(5) %}
+                                    {% if i < product.rating %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="ms-1 text-muted">({{ product.rating }})</span>
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <a href="{{ product.affiliate_link }}" target="_blank" class="btn btn-primary w-100" rel="nofollow">
+                                <i class="fas fa-external-link-alt me-2"></i>Check Price on Amazon
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{{ url_for('blog') }}" class="btn btn-outline-primary btn-lg">
+                View All Categories <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Latest Blog Posts -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Latest Fashion Guides</h2>
+            <p class="lead text-muted">Expert reviews and buying guides to help you make the best choices</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for post in blog_posts %}
+            <div class="col-lg-4 col-md-6">
+                <article class="card h-100">
+                    <img src="{{ post.image }}" class="card-img-top" alt="{{ post.title }}">
+                    <div class="card-body d-flex flex-column">
+                        <div class="mb-2">
+                            <span class="badge bg-secondary">{{ post.category.title() }}</span>
+                            <small class="text-muted ms-2">{{ post.date }}</small>
+                        </div>
+                        <h5 class="card-title">{{ post.title }}</h5>
+                        <p class="card-text text-muted">{{ post.excerpt }}</p>
+                        <div class="mt-auto">
+                            <a href="{{ url_for('blog_post', post_id=post.id) }}" class="btn btn-outline-primary">
+                                Read More <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{{ url_for('blog') }}" class="btn btn-secondary btn-lg">
+                View All Posts <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2 class="display-6 fw-bold mb-4">Why Fashion Lovers Trust Us</h2>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-search-dollar fa-2x text-primary"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5>Best Deals</h5>
+                                <p class="text-muted">We hunt down the best prices and exclusive discounts.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-star fa-2x text-primary"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5>Honest Reviews</h5>
+                                <p class="text-muted">Real reviews from actual customers, no fake ratings.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-mobile-alt fa-2x text-primary"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5>Mobile First</h5>
+                                <p class="text-muted">Perfect shopping experience on any device.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-clock fa-2x text-primary"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5>Always Updated</h5>
+                                <p class="text-muted">Fresh content and deals updated daily.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600" 
+                     alt="Fashion Shopping" class="img-fluid rounded shadow">
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Disclaimer - Fashion Finds 2025{% endblock %}
+
+{% set hide_email_signup = true %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="display-4 fw-bold mb-5">Disclaimer</h1>
+            
+            <div class="mb-5">
+                <h2 class="h3 fw-bold mb-3">Affiliate Disclosure</h2>
+                <p>Fashion Finds 2025 is a participant in the Amazon Services LLC Associates Program, an affiliate advertising program designed to provide a means for sites to earn advertising fees by advertising and linking to Amazon.com.</p>
+                
+                <p>This means that when you click on certain links on this website and make a purchase, we may receive a small commission at no additional cost to you. This helps support our website and allows us to continue providing valuable content and product recommendations.</p>
+            </div>
+            
+            <div class="mb-5">
+                <h2 class="h3 fw-bold mb-3">Product Reviews & Recommendations</h2>
+                <p>All product reviews and recommendations on this website are based on our honest opinions and research. We strive to provide accurate and up-to-date information, but we cannot guarantee that all information is completely accurate or current.</p>
+                
+                <p>Product prices, availability, and specifications may change without notice. We recommend verifying all information directly with the retailer before making a purchase.</p>
+            </div>
+            
+            <div class="mb-5">
+                <h2 class="h3 fw-bold mb-3">No Warranty</h2>
+                <p>The information on this website is provided on an "as is" basis. We make no warranties, expressed or implied, and hereby disclaim all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.</p>
+            </div>
+            
+            <div class="mb-5">
+                <h2 class="h3 fw-bold mb-3">Limitation of Liability</h2>
+                <p>In no event shall Fashion Finds 2025 or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on this website, even if we have been notified orally or in writing of the possibility of such damage.</p>
+            </div>
+            
+            <div class="mb-5">
+                <h2 class="h3 fw-bold mb-3">External Links</h2>
+                <p>Our website may contain links to external websites that are not provided or maintained by us. We do not guarantee the accuracy, relevance, timeliness, or completeness of any information on these external websites.</p>
+            </div>
+            
+            <div class="mb-5">
+                <h2 class="h3 fw-bold mb-3">Changes to This Disclaimer</h2>
+                <p>We reserve the right to update or change this disclaimer at any time without prior notice. Your continued use of this website after any changes indicates your acceptance of the new terms.</p>
+            </div>
+            
+            <div class="bg-light p-4 rounded">
+                <h3 class="h4 fw-bold mb-3">Questions?</h3>
+                <p class="mb-3">If you have any questions about this disclaimer, please don't hesitate to contact us.</p>
+                <a href="{{ url_for('contact') }}" class="btn btn-primary">
+                    <i class="fas fa-envelope me-2"></i>Contact Us
+                </a>
+            </div>
+            
+            <div class="text-muted mt-4">
+                <small>Last updated: January 2025</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

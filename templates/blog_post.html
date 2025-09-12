@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} - Fashion Finds 2025{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <article>
+                <!-- Post Header -->
+                <header class="mb-5">
+                    <div class="mb-3">
+                        <span class="badge bg-primary">{{ post.category.title() }}</span>
+                        <span class="text-muted ms-3">{{ post.date }}</span>
+                    </div>
+                    <h1 class="display-4 fw-bold mb-4">{{ post.title }}</h1>
+                    <img src="{{ post.image }}" alt="{{ post.title }}" class="img-fluid rounded shadow mb-4">
+                </header>
+
+                <!-- Intro -->
+                <div class="mb-5">
+                    <p class="lead">{{ post.excerpt }}</p>
+                    <p>Looking for the perfect summer dress that won't break the bank? You're in the right place! We've scoured Amazon to find the most stylish, comfortable, and affordable dresses under $50. Each dress has been carefully selected based on customer reviews, quality, and style trends for 2025.</p>
+                </div>
+
+                <!-- Quick Comparison Table -->
+                <div class="mb-5">
+                    <h2 class="h3 fw-bold mb-4">🏆 Top Picks at a Glance</h2>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Image</th>
+                                    <th>Price</th>
+                                    <th>Rating</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in products %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ product.name }}</strong>
+                                    </td>
+                                    <td>
+                                        <img src="{{ product.image }}" alt="{{ product.name }}" 
+                                             class="rounded" style="width: 80px; height: 80px; object-fit: cover;">
+                                    </td>
+                                    <td>
+                                        <span class="h5 text-primary">{{ product.price }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="rating">
+                                            {% for i in range(5) %}
+                                                {% if i < product.rating %}
+                                                    <i class="fas fa-star"></i>
+                                                {% else %}
+                                                    <i class="far fa-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <br><small class="text-muted">{{ product.rating }}/5</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a href="{{ product.affiliate_link }}" target="_blank" 
+                                           class="btn btn-primary btn-sm" rel="nofollow">
+                                            <i class="fas fa-shopping-cart me-1"></i>Check Price
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Detailed Reviews -->
+                <div class="mb-5">
+                    <h2 class="h3 fw-bold mb-4">📝 Detailed Reviews</h2>
+                    
+                    {% for product in products %}
+                    <div class="card mb-4 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <img src="{{ product.image }}" alt="{{ product.name }}" 
+                                         class="img-fluid rounded">
+                                </div>
+                                <div class="col-md-8">
+                                    <h3 class="h4 fw-bold">{{ loop.index }}. {{ product.name }}</h3>
+                                    <div class="rating mb-3">
+                                        {% for i in range(5) %}
+                                            {% if i < product.rating %}
+                                                <i class="fas fa-star"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <span class="ms-2 text-muted">{{ product.rating }}/5 (1,200+ reviews)</span>
+                                    </div>
+                                    
+                                    <p>This stunning floral dress is perfect for summer occasions. Made from lightweight, breathable fabric that keeps you cool and comfortable all day long. The flattering A-line silhouette suits all body types.</p>
+                                    
+                                    <!-- Pros & Cons -->
+                                    <div class="row mt-4">
+                                        <div class="col-md-6">
+                                            <h5 class="text-success"><i class="fas fa-check-circle me-2"></i>Pros</h5>
+                                            <ul class="list-unstyled">
+                                                <li><i class="fas fa-check text-success me-2"></i>Comfortable fit</li>
+                                                <li><i class="fas fa-check text-success me-2"></i>True to size</li>
+                                                <li><i class="fas fa-check text-success me-2"></i>Machine washable</li>
+                                                <li><i class="fas fa-check text-success me-2"></i>Great value</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h5 class="text-warning"><i class="fas fa-exclamation-triangle me-2"></i>Cons</h5>
+                                            <ul class="list-unstyled">
+                                                <li><i class="fas fa-minus text-warning me-2"></i>Limited color options</li>
+                                                <li><i class="fas fa-minus text-warning me-2"></i>May wrinkle easily</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between align-items-center mt-4">
+                                        <span class="h4 text-primary mb-0">{{ product.price }}</span>
+                                        <a href="{{ product.affiliate_link }}" target="_blank" 
+                                           class="btn btn-primary" rel="nofollow">
+                                            <i class="fas fa-external-link-alt me-2"></i>Check Price on Amazon
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Buying Guide -->
+                <div class="mb-5">
+                    <h2 class="h3 fw-bold mb-4">💡 Summer Dress Buying Guide</h2>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="card h-100 border-0 bg-light">
+                                <div class="card-body">
+                                    <h5><i class="fas fa-ruler me-2 text-primary"></i>Size & Fit</h5>
+                                    <p>Always check the size chart and read customer reviews about sizing. Many Amazon dresses run small or large.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100 border-0 bg-light">
+                                <div class="card-body">
+                                    <h5><i class="fas fa-tshirt me-2 text-primary"></i>Fabric Quality</h5>
+                                    <p>Look for breathable fabrics like cotton, linen, or cotton blends for summer comfort.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100 border-0 bg-light">
+                                <div class="card-body">
+                                    <h5><i class="fas fa-star me-2 text-primary"></i>Reviews</h5>
+                                    <p>Read recent reviews and look at customer photos to get a realistic view of the product.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100 border-0 bg-light">
+                                <div class="card-body">
+                                    <h5><i class="fas fa-undo me-2 text-primary"></i>Return Policy</h5>
+                                    <p>Check Amazon's return policy and make sure you can return if the dress doesn't fit.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Final CTA -->
+                <div class="text-center p-4 bg-light rounded">
+                    <h3 class="fw-bold mb-3">Ready to Shop?</h3>
+                    <p class="mb-4">Don't miss out on these amazing deals! Prices and availability can change quickly on Amazon.</p>
+                    <a href="{{ products[0].affiliate_link }}" target="_blank" 
+                       class="btn btn-primary btn-lg" rel="nofollow">
+                        <i class="fas fa-shopping-bag me-2"></i>Shop Our #1 Pick Now
+                    </a>
+                </div>
+            </article>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="sticky-top" style="top: 100px;">
+                <!-- Quick Links -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-list me-2"></i>Quick Navigation</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li><a href="#comparison" class="text-decoration-none">🏆 Top Picks Comparison</a></li>
+                            <li><a href="#reviews" class="text-decoration-none">📝 Detailed Reviews</a></li>
+                            <li><a href="#guide" class="text-decoration-none">💡 Buying Guide</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Related Categories -->
+                <div class="card mb-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0"><i class="fas fa-tags me-2"></i>Related Categories</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('category', category='bag') }}" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-handbag me-2"></i>Handbags
+                            </a>
+                            <a href="{{ url_for('category', category='jewelry') }}" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-gem me-2"></i>Jewelry
+                            </a>
+                            <a href="{{ url_for('blog') }}" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-blog me-2"></i>All Guides
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Affiliate Disclaimer -->
+                <div class="card">
+                    <div class="card-body text-center">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            This post contains affiliate links. We may earn a commission if you make a purchase through our links, at no extra cost to you.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

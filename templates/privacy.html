@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy - Fashion Finds 2025{% endblock %}
+
+{% set hide_email_signup = true %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="display-4 fw-bold mb-5">Privacy Policy</h1>
+            
+            <div class="mb-5">
+                <h2 class="h3 fw-bold mb-3">Information We Collect</h2>
+                <p>We collect information you provide directly to us, such as when you:</p>
+                <ul>
+                    <li>Subscribe to our email newsletter</li>
+                    <li>Contact us through our contact form</li>
+                    <li>Interact with our website</li>
+                </ul>
+                
+                <p>This may include your name, email address, and any messages you send us.</p>
+            </div>
+            
+            <div class="mb-5">
+                <h2 class="h3 fw-bold mb-3">How We Use Your Information</h2>
+                <p>We use the information we collect to:</p>
+                <ul>
+                    <li>Send you our fashion deals newsletter (if you subscribe)</li>
+                    <li>Respond to your inquiries and provide customer support</li>
+                    <li>Improve our website and services</li>
+                    <li>Comply with legal obligations</li>
+                </ul>
+            </div>
+            
+            <div class="mb-5">
+                <h2 class="h3 fw-bold mb-3">Information Sharing</h2>
+                <p>We do not sell, trade, or otherwise transfer your personal information to third parties without your consent, except as described in this policy. We may share your information:</p>
+                <ul>
+                    <li>With service providers who help us operate our website</li>
+                    <li>When required by law or to protect our rights</li>
+                    <li>In connection with a business transfer or sale</li>
+                </ul>
+            </div>
+            
+            <div class="mb-5">
+                <h2 class="h3 fw-bold mb-3">Cookies and Tracking</h2>
+                <p>Our website may use cookies and similar tracking technologies to enhance your experience. These may include:</p>
+                <ul>
+                    <li>Essential cookies for website functionality</li>
+                    <li>Analytics cookies to understand how visitors use our site</li>
+                    <li>Advertising cookies from affiliate partners</li>
+                </ul>
+                <p>You can control cookies through your browser settings.</p>
+            </div>
+            
+            <div class="mb-5">
+                <h2 class="h3 fw-bold mb-3">Third-Party Links</h2>
+                <p>Our website contains links to third-party websites, including affiliate links to Amazon and other retailers. These sites have their own privacy policies, and we are not responsible for their practices.</p>
+            </div>
+            
+            <div class="mb-5">
+                <h2 class="h3 fw-bold mb-3">Data Security</h2>
+                <p>We implement appropriate security measures to protect your personal information. However, no method of transmission over the internet is 100% secure, and we cannot guarantee absolute security.</p>
+            </div>
+            
+            <div class="mb-5">
+                <h2 class="h3 fw-bold mb-3">Your Rights</h2>
+                <p>You have the right to:</p>
+                <ul>
+                    <li>Access the personal information we have about you</li>
+                    <li>Correct inaccurate information</li>
+                    <li>Request deletion of your information</li>
+                    <li>Unsubscribe from our email list at any time</li>
+                </ul>
+            </div>
+            
+            <div class="mb-5">
+                <h2 class="h3 fw-bold mb-3">Children's Privacy</h2>
+                <p>Our website is not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13.</p>
+            </div>
+            
+            <div class="mb-5">
+                <h2 class="h3 fw-bold mb-3">Changes to This Policy</h2>
+                <p>We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the "Last updated" date.</p>
+            </div>
+            
+            <div class="bg-light p-4 rounded">
+                <h3 class="h4 fw-bold mb-3">Contact Us</h3>
+                <p class="mb-3">If you have any questions about this privacy policy or our data practices, please contact us.</p>
+                <a href="{{ url_for('contact') }}" class="btn btn-primary">
+                    <i class="fas fa-envelope me-2"></i>Contact Us
+                </a>
+            </div>
+            
+            <div class="text-muted mt-4">
+                <small>Last updated: January 2025</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

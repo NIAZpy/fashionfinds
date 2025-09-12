@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Fashion Blog - Latest Style Guides & Reviews{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">Fashion Blog</h1>
+        <p class="lead text-muted">Expert reviews, buying guides, and the latest fashion trends</p>
+    </div>
+    
+    <div class="row g-4">
+        {% for post in blog_posts %}
+        <div class="col-lg-4 col-md-6">
+            <article class="card h-100">
+                <img src="{{ post.image }}" class="card-img-top" alt="{{ post.title }}">
+                <div class="card-body d-flex flex-column">
+                    <div class="mb-2">
+                        <span class="badge bg-primary">{{ post.category.title() }}</span>
+                        <small class="text-muted ms-2">{{ post.date }}</small>
+                    </div>
+                    <h2 class="h5 card-title">{{ post.title }}</h2>
+                    <p class="card-text text-muted">{{ post.excerpt }}</p>
+                    <div class="mt-auto">
+                        <a href="{{ url_for('blog_post', post_id=post.id) }}" class="btn btn-outline-primary">
+                            Read Full Guide <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </article>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

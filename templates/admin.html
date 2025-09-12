@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - Add Products{% endblock %}
+
+{% set hide_email_signup = true %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold">Product Admin Panel</h1>
+                <p class="lead text-muted">Add new products with affiliate links</p>
+            </div>
+            
+            <!-- Add Product Form -->
+            <div class="card mb-5">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="fas fa-plus me-2"></i>Add New Product</h3>
+                </div>
+                <div class="card-body">
+                    <form id="addProductForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="productName" class="form-label">Product Name *</label>
+                                    <input type="text" class="form-control" id="productName" required 
+                                           placeholder="e.g., Summer Floral Dress">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="productCategory" class="form-label">Category *</label>
+                                    <select class="form-control" id="productCategory" required>
+                                        <option value="">Choose category...</option>
+                                        <option value="dress">Dress</option>
+                                        <option value="bag">Bag</option>
+                                        <option value="jewelry">Jewelry</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="productPrice" class="form-label">Price *</label>
+                                    <input type="text" class="form-control" id="productPrice" required 
+                                           placeholder="e.g., $39.99">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="productRating" class="form-label">Rating (1-5) *</label>
+                                    <input type="number" class="form-control" id="productRating" 
+                                           min="1" max="5" step="0.1" required placeholder="e.g., 4.5">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="productImage" class="form-label">Image URL *</label>
+                            <input type="url" class="form-control" id="productImage" required 
+                                   placeholder="https://images.unsplash.com/photo-...">
+                            <div class="form-text">Use high-quality images from Unsplash or product photos</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="affiliateLink" class="form-label">Affiliate Link *</label>
+                            <input type="url" class="form-control" id="affiliateLink" required 
+                                   placeholder="https://amzn.to/your-affiliate-link">
+                            <div class="form-text">Your Amazon Associates or other affiliate link</div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-plus me-2"></i>Add Product
+                        </button>
+                    </form>
+                    
+                    <div id="addProductMessage" class="mt-3"></div>
+                </div>
+            </div>
+            
+            <!-- Current Products List -->
+            <div class="card">
+                <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0"><i class="fas fa-list me-2"></i>Current Products</h3>
+                    <button class="btn btn-light btn-sm" onclick="loadProducts()">
+                        <i class="fas fa-refresh me-1"></i>Refresh
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="productsList">
+                        <div class="text-center py-3">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading products...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Add Product Form Handler
+document.getElementById('addProductForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        name: document.getElementById('productName').value,
+        category: document.getElementById('productCategory').value,
+        price: document.getElementById('productPrice').value,
+        rating: parseFloat(document.getElementById('productRating').value),
+        image: document.getElementById('productImage').value,
+        affiliate_link: document.getElementById('affiliateLink').value
+    };
+    
+    const messageDiv = document.getElementById('addProductMessage');
+    
+    try {
+        const response = await fetch('/api/products', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            messageDiv.innerHTML = '<div class="alert alert-success"><i class="fas fa-check me-2"></i>' + data.message + '</div>';
+            document.getElementById('addProductForm').reset();
+            loadProducts(); // Refresh the products list
+        } else {
+            messageDiv.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>' + data.message + '</div>';
+        }
+    } catch (error) {
+        messageDiv.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Something went wrong. Please try again.</div>';
+    }
+});
+
+// Load Products Function
+async function loadProducts() {
+    const productsList = document.getElementById('productsList');
+    
+    try {
+        const response = await fetch('/api/products');
+        const data = await response.json();
+        
+        if (data.products && data.products.length > 0) {
+            let html = '<div class="row g-3">';
+            
+            data.products.forEach(product => {
+                html += `
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="row g-0">
+                                <div class="col-4">
+                                    <img src="${product.image}" class="img-fluid rounded-start h-100" 
+                                         style="object-fit: cover;" alt="${product.name}">
+                                </div>
+                                <div class="col-8">
+                                    <div class="card-body p-3">
+                                        <h6 class="card-title">${product.name}</h6>
+                                        <p class="card-text">
+                                            <small class="text-muted">
+                                                <span class="badge bg-secondary">${product.category}</span><br>
+                                                <strong>${product.price}</strong> | ⭐ ${product.rating}
+                                            </small>
+                                        </p>
+                                        <div class="d-flex gap-1">
+                                            <button class="btn btn-outline-primary btn-sm" onclick="editProduct('${product._id}')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger btn-sm" onclick="deleteProduct('${product._id}')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            <a href="${product.affiliate_link}" target="_blank" class="btn btn-outline-success btn-sm">
+                                                <i class="fas fa-external-link-alt"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            productsList.innerHTML = html;
+        } else {
+            productsList.innerHTML = '<div class="text-center py-4"><p class="text-muted">No products found. Add your first product above!</p></div>';
+        }
+    } catch (error) {
+        productsList.innerHTML = '<div class="alert alert-danger">Failed to load products. Please try again.</div>';
+    }
+}
+
+// Delete Product Function
+async function deleteProduct(productId) {
+    if (!confirm('Are you sure you want to delete this product?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/products/${productId}`, {
+            method: 'DELETE'
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            loadProducts(); // Refresh the list
+        } else {
+            alert('Failed to delete product: ' + data.message);
+        }
+    } catch (error) {
+        alert('Something went wrong. Please try again.');
+    }
+}
+
+// Edit Product Function (placeholder)
+function editProduct(productId) {
+    alert('Edit functionality coming soon! For now, you can delete and re-add the product.');
+}
+
+// Load products when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadProducts();
+});
+</script>
+{% endblock %}

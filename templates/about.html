@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}About Me - Fashion Finds 2025{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <img src="https://m.media-amazon.com/images/I/71tOOL5hArL._UF1000,1000_QL80_.jpg" 
+                     alt="NIAZ" class="rounded-circle mb-4" style="width: 150px; height: 150px; object-fit: cover;">
+                <h1 class="display-4 fw-bold">Hi, I'm NIAZ!</h1>
+                <p class="lead text-muted">Fashion enthusiast and deal hunter extraordinaire</p>
+            </div>
+            
+            <div class="mb-5">
+                <h2 class="h3 fw-bold mb-4">My Fashion Journey</h2>
+                <p>Welcome to Fashion Finds! I'm NIAZ, a fashion lover who believes that great style shouldn't break the bank. After years of hunting for the perfect pieces at amazing prices, I decided to share my discoveries with fellow fashion enthusiasts.</p>
+                
+                <p>What started as a personal quest to find stylish, affordable clothing has grown into a passion for helping others discover incredible fashion deals. I spend hours researching products, reading reviews, and testing items to bring you only the best recommendations.</p>
+            </div>
+            
+            <div class="row g-4 mb-5">
+                <div class="col-md-6">
+                    <div class="card h-100 border-0 bg-light">
+                        <div class="card-body text-center">
+                            <i class="fas fa-search fa-3x text-primary mb-3"></i>
+                            <h4>Research Obsessed</h4>
+                            <p>I read hundreds of reviews and compare dozens of products to find the absolute best deals for you.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100 border-0 bg-light">
+                        <div class="card-body text-center">
+                            <i class="fas fa-heart fa-3x text-primary mb-3"></i>
+                            <h4>Honest Reviews</h4>
+                            <p>I only recommend products I would buy myself. No fake reviews, just honest opinions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-5">
+                <h2 class="h3 fw-bold mb-4">Why I Started Fashion Finds</h2>
+                <p>After countless hours scrolling through endless product pages and reading mixed reviews, I realized how overwhelming online shopping can be. There's so much choice, but how do you know what's actually worth buying?</p>
+                
+                <p>That's where Fashion Finds comes in. I do the hard work for you - researching, comparing, and testing products so you can shop with confidence. Every recommendation comes from genuine research and real experience.</p>
+            </div>
+            
+            <div class="bg-light p-4 rounded mb-5">
+                <h3 class="h4 fw-bold mb-3">My Promise to You</h3>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Honest, unbiased product reviews</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Thorough research on every recommendation</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Regular updates on the latest deals and trends</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Transparent affiliate relationships</li>
+                </ul>
+            </div>
+            
+            <div class="text-center">
+                <h3 class="h4 fw-bold mb-3">Let's Connect!</h3>
+                <p class="mb-4">Have a question or want to share your own fashion finds? I'd love to hear from you!</p>
+                <a href="{{ url_for('contact') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-envelope me-2"></i>Get in Touch
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
