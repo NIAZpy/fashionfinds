@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Fashion Finds 2025 - Affiliate Marketing Website
 
 A modern, mobile-first fashion affiliate website built with Flask backend and clean, responsive design. Features product comparisons, blog posts, email subscriptions, and optimized conversion funnels.
@@ -253,3 +254,6 @@ This project is for educational and commercial use. Please ensure compliance wit
 ---
 
 **Ready to launch your fashion affiliate empire? Start customizing and adding your affiliate links!** 🛍️✨
+=======
+# fashionfinds
+>>>>>>> a332c31a455417d077fae37eefd2ceeaa73322d4
