@@ -33,6 +33,22 @@ basic_auth = BasicAuth(app)
 
 # mail = Mail(app)  # Commented out temporarily
 
+"""AdSense configuration injected into templates
+
+Environment variables that will be read if present:
+- ADSENSE_CLIENT: e.g., "ca-pub-XXXXXXXXXXXXXXXX"
+- ADSENSE_SLOT_TOP: optional, numeric slot ID for a header/below-nav ad
+- ADSENSE_SLOT_INARTICLE: optional, numeric slot ID for an in-article ad
+"""
+
+@app.context_processor
+def inject_adsense_ids():
+    return {
+        'ADSENSE_CLIENT': os.getenv('ADSENSE_CLIENT', ''),
+        'ADSENSE_SLOT_TOP': os.getenv('ADSENSE_SLOT_TOP', ''),
+        'ADSENSE_SLOT_INARTICLE': os.getenv('ADSENSE_SLOT_INARTICLE', ''),
+    }
+
 """MongoDB (Atlas) setup"""
 MONGODB_URI = os.getenv('MONGODB_URI')
 MONGO_DB = os.getenv('MONGO_DB', 'fashiondb')
@@ -164,6 +180,37 @@ def add_product():
     except Exception as e:
         traceback.print_exc()
         return jsonify({'success': False, 'message': f'Failed to add product: {str(e)}'}), 500
+
+@app.route('/api/products/<string:product_id>', methods=['PUT'])
+@basic_auth.required
+def update_product(product_id):
+    try:
+        data = request.get_json() or {}
+        required = ['name', 'category', 'price', 'rating', 'image', 'affiliate_link']
+        if not all(k in data and data[k] for k in required):
+            return jsonify({'success': False, 'message': 'All product fields are required'}), 400
+
+        coll = get_products_coll()
+        if coll is None:
+            return jsonify({'success': False, 'message': 'Database not configured'}), 500
+
+        update_doc = {'$set': {
+            'name': data['name'],
+            'category': data['category'],
+            'price': data['price'],
+            'rating': data['rating'],
+            'image': data['image'],
+            'affiliate_link': data['affiliate_link'],
+        }}
+        result = coll.update_one({'_id': ObjectId(product_id)}, update_doc)
+        if result.matched_count == 0:
+            return jsonify({'success': False, 'message': 'Product not found'}), 404
+
+        updated = coll.find_one({'_id': ObjectId(product_id)})
+        return jsonify({'success': True, 'message': 'Product updated successfully', 'post': product_to_json(updated)})
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'success': False, 'message': f'Failed to update product: {str(e)}'}), 500
 
 @app.route('/api/products/<string:product_id>', methods=['DELETE'])
 @basic_auth.required
