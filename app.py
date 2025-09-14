@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for, Response
 from flask_cors import CORS
 from flask_basicauth import BasicAuth
 # from flask_mail import Mail, Message  # Commented out temporarily
@@ -145,6 +145,35 @@ def privacy():
 @basic_auth.required
 def admin():
     return render_template('admin.html')
+
+@app.route('/robots.txt')
+def robots_txt():
+    """Permit Google AdSense and general crawling."""
+    content = (
+        "User-agent: *\n"
+        "Allow: /\n"
+        "Sitemap: " + request.url_root.rstrip('/') + "/sitemap.xml\n"
+        "User-agent: Mediapartners-Google\n"
+        "Allow: /\n"
+    )
+    return Response(content, mimetype='text/plain')
+
+@app.route('/ads.txt')
+def ads_txt():
+    """Serve ads.txt from env if provided; otherwise minimal placeholder.
+
+    Set ADS_TXT_CONTENT in environment to your exact AdSense-provided lines,
+    e.g., "google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0".
+    """
+    content = os.getenv('ADS_TXT_CONTENT', '').strip()
+    if not content:
+        # Placeholder advises configuring ADS_TXT_CONTENT
+        content = (
+            "# Configure ADS_TXT_CONTENT env var with your ads.txt entries\n"
+            "# Example (replace with your own):\n"
+            "# google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0\n"
+        )
+    return Response(content + ("\n" if not content.endswith("\n") else ""), mimetype='text/plain')
 
 @app.route('/api/products', methods=['GET'])
 def get_products():
