@@ -33,39 +33,6 @@ basic_auth = BasicAuth(app)
 
 # mail = Mail(app)  # Commented out temporarily
 
-# Multiple admin support: define a custom verifier that checks either
-# ADMIN_USERS (CSV of user:pass pairs) or falls back to single-user config.
-_admin_users_cache = None
-
-def _load_admin_users():
-    global _admin_users_cache
-    if _admin_users_cache is not None:
-        return _admin_users_cache
-    users_env = os.getenv('ADMIN_USERS', '').strip()
-    users = {}
-    if users_env:
-        # Format: "user1:pass1,user2:pass2"
-        for pair in users_env.split(','):
-            if ':' in pair:
-                u, p = pair.split(':', 1)
-                u = u.strip()
-                p = p.strip()
-                if u:
-                    users[u] = p
-    # Fallback to single admin
-    single_user = os.getenv('ADMIN_USERNAME', 'admin')
-    single_pass = os.getenv('ADMIN_PASSWORD', 'password')
-    if single_user and single_pass and single_user not in users:
-        users[single_user] = single_pass
-    _admin_users_cache = users
-    return _admin_users_cache
-
-@basic_auth.verify_password
-def verify_password(username, password):
-    users = _load_admin_users()
-    expected = users.get(username)
-    return expected is not None and password == expected
-
 """AdSense configuration injected into templates
 
 Environment variables that will be read if present:
