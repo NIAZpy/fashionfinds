@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Blog - Write & Manage Posts{% endblock %}
+
+{% set hide_email_signup = true %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="display-6 fw-bold mb-0">Blog Admin</h1>
+          <div class="text-muted">Create, edit, and delete blog posts</div>
+        </div>
+        <a href="{{ url_for('blog') }}" class="btn btn-outline-secondary">
+          <i class="fas fa-globe me-2"></i>View Blog
+        </a>
+      </div>
+
+      <!-- Create / Edit Post Form -->
+      <div class="card mb-5">
+        <div class="card-header bg-primary text-white d-flex align-items-center">
+          <i class="fas fa-pen-to-square me-2"></i>
+          <span id="formTitle">Write New Post</span>
+        </div>
+        <div class="card-body">
+          <form id="postForm">
+            <input type="hidden" id="postId">
+
+            <div class="row g-3">
+              <div class="col-md-8">
+                <label class="form-label">Title *</label>
+                <input type="text" class="form-control" id="title" required placeholder="e.g., Best Summer Dresses Under $50">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Category *</label>
+                <select class="form-select" id="category" required>
+                  <option value="">Choose...</option>
+                  <option value="dress">Dress</option>
+                  <option value="bag">Bag</option>
+                  <option value="jewelry">Jewelry</option>
+                  <option value="general">General</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Hero Image URL *</label>
+                <input type="url" class="form-control" id="image" required placeholder="https://images.unsplash.com/photo-...">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Excerpt (short summary) *</label>
+                <textarea class="form-control" id="excerpt" rows="2" required placeholder="1–2 sentences summary shown on the blog list"></textarea>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Content (HTML allowed) *</label>
+                <textarea class="form-control" id="content" rows="8" required placeholder="Write your post content here..."></textarea>
+                <div class="form-text">You can paste HTML or plain text. The current blog post template contains additional sections for tables and product reviews.</div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Date (optional)</label>
+                <input type="text" class="form-control" id="date" placeholder="e.g., 2025-09-14">
+              </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+              <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i><span id="submitText">Publish</span></button>
+              <button type="button" id="resetBtn" class="btn btn-outline-secondary">Reset</button>
+            </div>
+          </form>
+          <div id="postMessage" class="mt-3"></div>
+        </div>
+      </div>
+
+      <!-- Posts List -->
+      <div class="card">
+        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+          <span><i class="fas fa-list me-2"></i>Existing Posts</span>
+          <button class="btn btn-light btn-sm" id="refreshBtn"><i class="fas fa-rotate me-1"></i>Refresh</button>
+        </div>
+        <div class="card-body">
+          <div id="postsList">
+            <div class="text-center py-3">
+              <div class="spinner-border text-primary" role="status"></div>
+              <p class="mt-2">Loading posts...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const postForm = document.getElementById('postForm');
+const postIdEl = document.getElementById('postId');
+const titleEl = document.getElementById('title');
+const categoryEl = document.getElementById('category');
+const imageEl = document.getElementById('image');
+const excerptEl = document.getElementById('excerpt');
+const contentEl = document.getElementById('content');
+const dateEl = document.getElementById('date');
+const postMessage = document.getElementById('postMessage');
+const formTitle = document.getElementById('formTitle');
+const submitText = document.getElementById('submitText');
+const resetBtn = document.getElementById('resetBtn');
+const refreshBtn = document.getElementById('refreshBtn');
+const postsList = document.getElementById('postsList');
+
+function showMessage(type, text) {
+  postMessage.innerHTML = `<div class="alert alert-${type}">${text}</div>`;
+}
+
+function clearForm() {
+  postIdEl.value = '';
+  titleEl.value = '';
+  categoryEl.value = '';
+  imageEl.value = '';
+  excerptEl.value = '';
+  contentEl.value = '';
+  dateEl.value = '';
+  formTitle.textContent = 'Write New Post';
+  submitText.textContent = 'Publish';
+  postMessage.innerHTML = '';
+}
+
+resetBtn.addEventListener('click', clearForm);
+refreshBtn.addEventListener('click', loadPosts);
+
+postForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const payload = {
+    title: titleEl.value.trim(),
+    category: categoryEl.value.trim(),
+    image: imageEl.value.trim(),
+    excerpt: excerptEl.value.trim(),
+    content: contentEl.value.trim(),
+    date: dateEl.value.trim(),
+  };
+
+  const isEdit = !!postIdEl.value;
+  const url = isEdit ? `/api/posts/${postIdEl.value}` : '/api/posts';
+  const method = isEdit ? 'PUT' : 'POST';
+
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data.success) {
+      showMessage('success', data.message || (isEdit ? 'Updated' : 'Published'));
+      clearForm();
+      loadPosts();
+    } else {
+      showMessage('danger', data.message || 'Failed to save post');
+    }
+  } catch (err) {
+    showMessage('danger', 'Network error. Please try again.');
+  }
+});
+
+async function loadPosts() {
+  postsList.innerHTML = `<div class="text-center py-3">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2">Loading posts...</p>
+  </div>`;
+  try {
+    const res = await fetch('/api/posts');
+    const data = await res.json();
+    const posts = data.posts || [];
+    if (posts.length === 0) {
+      postsList.innerHTML = '<div class="text-center text-muted py-3">No posts yet.</div>';
+      return;
+    }
+    let html = '<div class="table-responsive"><table class="table align-middle">';
+    html += '<thead><tr><th>Title</th><th>Category</th><th>Date</th><th>Preview</th><th class="text-end">Actions</th></tr></thead><tbody>';
+    posts.forEach(p => {
+      html += `<tr>
+        <td>${p.title}</td>
+        <td><span class="badge bg-secondary">${p.category || 'general'}</span></td>
+        <td>${p.date || ''}</td>
+        <td><a href="/blog/view/${p.id}" target="_blank" class="btn btn-outline-secondary btn-sm"><i class="fas fa-external-link-alt"></i></a></td>
+        <td class="text-end">
+          <button class="btn btn-outline-primary btn-sm me-1" onclick='editPost(${JSON.stringify(p)})'><i class="fas fa-edit"></i></button>
+          <button class="btn btn-outline-danger btn-sm" onclick='deletePost("${p.id}")'><i class="fas fa-trash"></i></button>
+        </td>
+      </tr>`;
+    });
+    html += '</tbody></table></div>';
+    postsList.innerHTML = html;
+  } catch (err) {
+    postsList.innerHTML = '<div class="alert alert-danger">Failed to load posts.</div>';
+  }
+}
+
+function editPost(p) {
+  postIdEl.value = p.id;
+  titleEl.value = p.title || '';
+  categoryEl.value = p.category || '';
+  imageEl.value = p.image || '';
+  excerptEl.value = p.excerpt || '';
+  contentEl.value = p.content || '';
+  dateEl.value = p.date || '';
+  formTitle.textContent = 'Edit Post';
+  submitText.textContent = 'Update';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function deletePost(id) {
+  if (!confirm('Delete this post?')) return;
+  try {
+    const res = await fetch(`/api/posts/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (data.success) {
+      loadPosts();
+    } else {
+      alert('Failed to delete: ' + (data.message || 'Unknown error'));
+    }
+  } catch (err) {
+    alert('Network error.');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadPosts);
+</script>
+{% endblock %}

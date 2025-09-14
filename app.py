@@ -53,6 +53,7 @@ def inject_adsense_ids():
 MONGODB_URI = os.getenv('MONGODB_URI')
 MONGO_DB = os.getenv('MONGO_DB', 'fashiondb')
 MONGO_COLLECTION = os.getenv('MONGO_COLLECTION', 'products')
+MONGO_POSTS_COLLECTION = os.getenv('MONGO_POSTS_COLLECTION', 'posts')
 
 _mongo_client = None
 def get_products_coll():
@@ -64,14 +65,32 @@ def get_products_coll():
             print("Attempting to connect to MongoDB...")
             # Set a timeout to avoid long hangs
             _mongo_client = MongoClient(MONGODB_URI, serverSelectionTimeoutMS=5000)
-            # The ping command is a lightweight way to verify connection and auth.
+            # Verify connection/auth
             _mongo_client.admin.command('ping')
             print("MongoDB connected successfully!")
         db = _mongo_client[MONGO_DB]
         return db[MONGO_COLLECTION]
     except Exception:
         # Log full traceback to console for debugging
-        print('Mongo connection error:')
+        print('Mongo connection error (products):')
+        traceback.print_exc()
+        return None
+
+def get_posts_coll():
+    """Get the MongoDB collection for blog posts, sharing the same client."""
+    global _mongo_client
+    if not MONGODB_URI:
+        return None
+    try:
+        if _mongo_client is None:
+            print("Attempting to connect to MongoDB...")
+            _mongo_client = MongoClient(MONGODB_URI, serverSelectionTimeoutMS=5000)
+            _mongo_client.admin.command('ping')
+            print("MongoDB connected successfully!")
+        db = _mongo_client[MONGO_DB]
+        return db[MONGO_POSTS_COLLECTION]
+    except Exception:
+        print('Mongo connection error (posts):')
         traceback.print_exc()
         return None
 
@@ -88,7 +107,20 @@ def product_to_json(doc):
         'affiliate_link': doc.get('affiliate_link'),
     }
 
-BLOG_POSTS = []  # No demo posts; wire up later when backend for posts is ready
+def post_to_json(doc):
+    if not doc:
+        return None
+    return {
+        'id': str(doc.get('_id')),
+        'title': doc.get('title'),
+        'category': doc.get('category') or 'general',
+        'date': doc.get('date') or '',
+        'image': doc.get('image') or '',
+        'excerpt': doc.get('excerpt') or '',
+        'content': doc.get('content') or '',
+    }
+
+BLOG_POSTS = []  # Deprecated; blog now reads from Mongo if configured
 
 @app.route('/')
 def home():
@@ -96,24 +128,132 @@ def home():
     coll = get_products_coll()
     if coll is not None:
         products = [product_to_json(p) for p in coll.find().sort('_id', -1)]
+    # Pull a few recent posts if DB configured
+    recent_posts = []
+    posts_coll = get_posts_coll()
+    if posts_coll is not None:
+        recent_posts = [post_to_json(p) for p in posts_coll.find().sort('_id', -1).limit(3)]
     return render_template('index.html', 
                          featured_products=products, 
-                         blog_posts=BLOG_POSTS[:3])
+                         blog_posts=recent_posts)
 
 @app.route('/blog')
 def blog():
-    return render_template('blog.html', blog_posts=BLOG_POSTS)
+    posts = []
+    coll = get_posts_coll()
+    if coll is not None:
+        posts = [post_to_json(p) for p in coll.find().sort('_id', -1)]
+    return render_template('blog.html', blog_posts=posts)
 
 @app.route('/blog/<int:post_id>')
 def blog_post(post_id):
-    post = next((p for p in BLOG_POSTS if p['id'] == post_id), None)
-    if not post:
+    # Support legacy integer IDs only if using in-memory posts
+    coll = get_posts_coll()
+    post = None
+    if coll is not None:
+        # In DB we use ObjectId strings; route expects int. Provide redirect.
         return redirect(url_for('blog'))
-    
-    # No demo comparison products
-    comparison_products = []
-    
-    return render_template('blog_post.html', post=post, products=comparison_products)
+    else:
+        post = next((p for p in BLOG_POSTS if p['id'] == post_id), None)
+        if not post:
+            return redirect(url_for('blog'))
+        comparison_products = []
+        return render_template('blog_post.html', post=post, products=comparison_products)
+
+@app.route('/blog/view/<string:post_id>')
+def blog_post_view(post_id):
+    """View a blog post by its Mongo ObjectId string."""
+    coll = get_posts_coll()
+    if coll is None:
+        return redirect(url_for('blog'))
+    try:
+        doc = coll.find_one({'_id': ObjectId(post_id)})
+        if not doc:
+            return redirect(url_for('blog'))
+        post = post_to_json(doc)
+        comparison_products = []
+        return render_template('blog_post.html', post=post, products=comparison_products)
+    except Exception:
+        traceback.print_exc()
+        return redirect(url_for('blog'))
+
+"""Blog Post APIs"""
+@app.route('/api/posts', methods=['GET'])
+def api_get_posts():
+    coll = get_posts_coll()
+    if coll is None:
+        return jsonify({'posts': []})
+    posts = [post_to_json(p) for p in coll.find().sort('_id', -1)]
+    return jsonify({'posts': posts})
+
+@app.route('/api/posts', methods=['POST'])
+@basic_auth.required
+def api_add_post():
+    try:
+        data = request.get_json() or {}
+        required = ['title', 'category', 'image', 'excerpt', 'content']
+        if not all(k in data and data[k] for k in required):
+            return jsonify({'success': False, 'message': 'All fields are required'}), 400
+        coll = get_posts_coll()
+        if coll is None:
+            return jsonify({'success': False, 'message': 'Database not configured'}), 500
+        doc = {
+            'title': data['title'],
+            'category': data['category'],
+            'image': data['image'],
+            'excerpt': data['excerpt'],
+            'content': data['content'],
+            'date': data.get('date') or '',
+        }
+        res = coll.insert_one(doc)
+        saved = coll.find_one({'_id': res.inserted_id})
+        return jsonify({'success': True, 'message': 'Post added successfully', 'post': post_to_json(saved)})
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'success': False, 'message': f'Failed to add post: {str(e)}'}), 500
+
+@app.route('/api/posts/<string:post_id>', methods=['PUT'])
+@basic_auth.required
+def api_update_post(post_id):
+    try:
+        data = request.get_json() or {}
+        required = ['title', 'category', 'image', 'excerpt', 'content']
+        if not all(k in data and data[k] for k in required):
+            return jsonify({'success': False, 'message': 'All fields are required'}), 400
+        coll = get_posts_coll()
+        if coll is None:
+            return jsonify({'success': False, 'message': 'Database not configured'}), 500
+        update_doc = {'$set': {
+            'title': data['title'],
+            'category': data['category'],
+            'image': data['image'],
+            'excerpt': data['excerpt'],
+            'content': data['content'],
+            'date': data.get('date') or '',
+        }}
+        result = coll.update_one({'_id': ObjectId(post_id)}, update_doc)
+        if result.matched_count == 0:
+            return jsonify({'success': False, 'message': 'Post not found'}), 404
+        updated = coll.find_one({'_id': ObjectId(post_id)})
+        return jsonify({'success': True, 'message': 'Post updated successfully', 'post': post_to_json(updated)})
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'success': False, 'message': f'Failed to update post: {str(e)}'}), 500
+
+@app.route('/api/posts/<string:post_id>', methods=['DELETE'])
+@basic_auth.required
+def api_delete_post(post_id):
+    try:
+        coll = get_posts_coll()
+        if coll is None:
+            return jsonify({'success': False, 'message': 'Database not configured'}), 500
+        res = coll.delete_one({'_id': ObjectId(post_id)})
+        if res.deleted_count == 0:
+            return jsonify({'success': False, 'message': 'Post not found'}), 404
+        return jsonify({'success': True, 'message': 'Post deleted'})
+    except Exception:
+        traceback.print_exc()
+        return jsonify({'success': False, 'message': 'Failed to delete post'}), 500
 
 @app.route('/categories/<category>')
 def category(category):
@@ -145,6 +285,11 @@ def privacy():
 @basic_auth.required
 def admin():
     return render_template('admin.html')
+
+@app.route('/admin/blog')
+@basic_auth.required
+def admin_blog():
+    return render_template('admin_blog.html')
 
 @app.route('/robots.txt')
 def robots_txt():
