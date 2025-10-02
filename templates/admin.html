@@ -36,8 +36,29 @@
                                         <option value="dress">Dress</option>
                                         <option value="bag">Bag</option>
                                         <option value="jewelry">Jewelry</option>
+                                        <option value="daraz">Daraz</option>
+                                        <option value="amazon-western">Amazon Western</option>
+                                        <option value="amazon-jp">Amazon </option>
+                                        <option value="amazon-in">Amazon IN</option>
                                     </select>
                                 </div>
+                                <div class="row">
+    <div class="col-md-6">
+        <div class="mb-3">
+            <label for="productCollection" class="form-label">Collection *</label>
+            <select class="form-control" id="productCollection" required>
+                <option value="">Choose collection...</option>
+                <option value="daraz">Daraz</option>
+                <option value="amazon-western">Amazon Western</option>
+                <option value="amazon-jp">Amazon 日本</option>
+                <option value="amazon-in">Amazon IN</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <!-- Placeholder for spacing or additional field -->
+    </div>
+</div>
                             </div>
                         </div>
                         
@@ -112,6 +133,7 @@ document.getElementById('addProductForm').addEventListener('submit', async funct
     const formData = {
         name: document.getElementById('productName').value,
         category: document.getElementById('productCategory').value,
+        collection: document.getElementById('productCollection').value,
         price: document.getElementById('productPrice').value,
         rating: parseFloat(document.getElementById('productRating').value),
         image: document.getElementById('productImage').value,

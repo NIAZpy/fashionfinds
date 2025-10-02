@@ -22,7 +22,7 @@
                     <h2 class="h5 card-title">{{ post.title }}</h2>
                     <p class="card-text text-muted">{{ post.excerpt }}</p>
                     <div class="mt-auto">
-                        <a href="{{ url_for('blog_post', post_id=post.id) }}" class="btn btn-outline-primary">
+                        <a href="{{ url_for('blog_post_view', post_id=post.id) }}" class="btn btn-outline-primary">
                             Read Full Guide <i class="fas fa-arrow-right ms-1"></i>
                         </a>
                     </div>
