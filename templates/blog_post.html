@@ -19,10 +19,12 @@
                 </header>
 
                 <!-- Intro -->
-                <div class="mb-5">
-                    <p class="lead">{{ post.excerpt }}</p>
-                    <p>Looking for the perfect summer dress that won't break the bank? You're in the right place! We've scoured Amazon to find the most stylish, comfortable, and affordable dresses under $50. Each dress has been carefully selected based on customer reviews, quality, and style trends for 2025.</p>
-                </div>
+               <div class="mb-5">
+    <p class="lead">{{ post.excerpt }}</p>
+    <div class="post-content">
+        {{ post.content|safe }}
+    </div>
+</div>
 
                 <!-- Quick Comparison Table -->
                 <div class="mb-5">

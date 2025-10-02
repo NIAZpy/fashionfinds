@@ -101,6 +101,7 @@ def product_to_json(doc):
         '_id': str(doc.get('_id')),
         'name': doc.get('name'),
         'category': doc.get('category'),
+        'collection': doc.get('collection') or'',
         'price': doc.get('price'),
         'rating': doc.get('rating'),
         'image': doc.get('image'),
@@ -266,7 +267,7 @@ def category(category):
     category_products = []
     coll = get_products_coll()
     if coll is not None:
-        category_products = [product_to_json(p) for p in coll.find({'category': category})]
+        category_products = [product_to_json(p) for p in coll.find({'collection': category})]
     return render_template('category.html', 
                          category=category.title(), 
                          products=category_products)
